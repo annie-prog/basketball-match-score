@@ -5,12 +5,19 @@ profiles, promoting users to specific roles, and linking user accounts with play
 profiles.
 """
 
+from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from hashlib import blake2s
 import jwt
+import os
 from data.models import LogInfo, User, UserInfo
 from data import database
-from data.secrets import SALT, SECRET_KEY, ALGO
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+SALT = os.getenv("SALT")
+ALGO = os.getenv("ALGO")
 
 def _hash(password: str):
     """Hashes the password using blake2s with a salt."""
