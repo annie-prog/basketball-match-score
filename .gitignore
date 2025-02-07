@@ -1,0 +1,10 @@
+.coverage
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+secrets.py
+
+venv/

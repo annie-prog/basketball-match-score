@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promote User</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1>Promote User</h1>
+
+        <form id="promote-user-form" method="POST">
+            <div class="mb-3">
+                <label for="user-id" class="form-label">User ID</label>
+                <input type="number" id="user-id" name="user_id" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Promote</button>
+        </form>
+        
+        <a href="{{ url_for('home') }}" class="btn btn-secondary mt-3">Back</a>
+
+        <div class="mt-5">
+            <h3>Users</h3>
+            <button id="load-users" class="btn btn-info mb-3">View All Users</button>
+            <table id="users-table" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4">Click "View All Users" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#promote-user-form').on('submit', function (e) {
+                e.preventDefault();
+                const userId = $('#user-id').val();
+
+                $.ajax({
+                    url: "{{ url_for('requests.promote_user') }}",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ user_id: userId }),
+                    success: function (response) {
+                        alert(response.message);
+                        $('#load-users').click();
+                    },
+                    error: function (xhr) {
+                        alert(`Failed to promote user ${userId}: ${xhr.responseText}`);
+                    }
+                });
+            });
+            $('#load-users').on('click', function () {
+                $.ajax({
+                    url: "{{ url_for('user.all_users') }}",
+                    method: "GET",
+                    success: function (response) {
+                        let rows = '';
+                        if (response.users.length > 0) {
+                            response.users.forEach(function (user) {
+                                rows += `<tr>
+                                            <td>${user.id}</td>
+                                            <td>${user.email}</td>
+                                            <td>${user.role || 'N/A'}</td>
+                                            <td>
+                                                <button class="btn btn-danger delete-user" data-id="${user.id}">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                         </tr>`;
+                            });
+                        } else {
+                            rows = `<tr>
+                                        <td colspan="4">No users available.</td>
+                                    </tr>`;
+                        }
+                        $('#users-table tbody').html(rows);
+                    },
+                    error: function () {
+                        alert('Failed to load users. Please try again later.');
+                    }
+                });
+            });
+
+            $(document).on('click', '.delete-user', function () {
+                const userId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this user?')) {
+                    $.ajax({
+                        url: "{{ url_for('user.delete_user_route') }}",
+                        method: "POST",
+                        contentType: "application/json",
+                        data: JSON.stringify({ user_id: userId }),
+                        success: function (response) {
+                            alert(response.message);
+                            $('#load-users').click();
+                        },
+                        error: function (xhr) {
+                            alert(`Failed to delete user ${userId}: ${xhr.responseText}`);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

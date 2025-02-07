@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Welcome, {{ name }}!</h1>
+            <a href="{{ url_for('home') }}" class="btn btn-danger">Logout</a>
+        </div>
+
+        <div class="card shadow-sm p-4">
+            <p class="fs-5 fw-semibold text-secondary">As an Administrator, you can manage all players and teams.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <button id="load-players" class="btn btn-outline-primary">View All Players</button>
+                <a href="{{ url_for('player.add_player') }}" class="btn btn-warning">Link Player</a>
+                <button id="load-teams" class="btn btn-outline-primary">View All Teams</button>
+                <a href="{{ url_for('team.add_team') }}" class="btn btn-success">Add New Team</a>
+                <a href="{{ url_for('requests.promote_user') }}" class="btn btn-dark">Promote User</a>
+                <a href="{{ url_for('match.create_player_match') }}" class="btn btn-primary">Create Player Match</a>
+                <a href="{{ url_for('match.create_team_match') }}" class="btn btn-primary">Create Team Match</a>
+                <a href="{{ url_for('tournaments.create_knockout_tournament') }}" class="btn btn-danger">Create Knockout Tournament</a>
+                <a href="{{ url_for('tournaments.create_league') }}" class="btn btn-danger">Create League Tournament</a>
+                <button id="update-tournament" class="btn btn-outline-secondary">Set Tournament Winner</button>
+                <button id="player-match-score-form-btn" class="btn btn-outline-secondary">Set Player Match Score</button>
+                <button id="team-match-score-form-btn" class="btn btn-outline-secondary">Set Team Match Score</button>
+                <button id="knockout-tournament-score-form-btn" class="btn btn-outline-secondary">Set Knockout Tournament Score</button>
+                <button id="get-tournaments" class="btn btn-info">View All Tournaments</button>
+                <button id="get-player-matches" class="btn btn-info">View All Player Matches</button>
+                <button id="get-team-matches" class="btn btn-info">View All Team Matches</button>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <h3>Tournaments</h3>
+            <table id="tournaments-table" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Prize</th>
+                        <th>Winner</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="4">Click "View All Tournaments" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-5">
+            <h3>Player Matches</h3>
+            <table id="player-matches-table" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Match ID</th>
+                        <th>Title</th>
+                        <th>Played At</th>
+                        <th>Match Format</th>
+                        <th>Players</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5">Click "View All Player Matches" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="mt-5">
+            <h3>Team Matches</h3>
+            <table id="team-matches-table" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>Match ID</th>
+                        <th>Title</th>
+                        <th>Played At</th>
+                        <th>Match Format</th>
+                        <th>Players</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5">Click "View All Team Matches" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="player-match-score-form-container" class="mt-4" style="display:none;">
+            <h3>Update Player Match Score</h3>
+            <form id="player-match-score-form">
+                <div class="mb-3">
+                    <label for="match-id" class="form-label">Match ID</label>
+                    <input type="number" class="form-control" id="match-id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="player-id" class="form-label">Player ID</label>
+                    <input type="number" class="form-control" id="player-id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="player-score" class="form-label">Score</label>
+                    <input type="number" class="form-control" id="player-score" required>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Update Score</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="team-match-score-form-container" class="mt-4" style="display:none;">
+            <h3>Update Team Match Score</h3>
+            <form id="team-match-score-form">
+                <div class="mb-3">
+                    <label for="team-match-id" class="form-label">Match ID</label>
+                    <input type="number" class="form-control" id="team-match-id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="team-id" class="form-label">Team ID</label>
+                    <input type="number" class="form-control" id="team-id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="team-score" class="form-label">Score</label>
+                    <input type="number" class="form-control" id="team-score" required>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Update Score</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="knockout-tournament-score-form-container" class="mt-4" style="display: none;">
+            <h3>Update Knockout Tournament Score</h3>
+            <form id="knockout-tournament-score-form">
+                <div class="mb-3">
+                    <label for="tournament-id" class="form-label">Tournament ID</label>
+                    <input type="number" class="form-control" id="tournament-id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="score-one" class="form-label">Score Player 1</label>
+                    <input type="number" class="form-control" id="score-one" required>
+                </div>
+                <div class="mb-3">
+                    <label for="score-two" class="form-label">Score Player 2</label>
+                    <input type="number" class="form-control" id="score-two" required>
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Update Score</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="league-tournament-score-form-container" class="mt-4" style="display: none;">
+            <h3>Update League Tournament Score</h3>
+            <form id="league-tournament-score-form">
+                <div class="mb-3">
+                    <label for="league-id" class="form-label">League Match ID</label>
+                    <input type="number" class="form-control" id="league-id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="league-score-one" class="form-label">Score Player 1</label>
+                    <input type="number" class="form-control" id="league-score-one" required>
+                </div>
+                <div class="mb-3">
+                    <label for="league-score-two" class="form-label">Score Player 2</label>
+                    <input type="number" class="form-control" id="league-score-two" required>
+                </div>
+                <div id="league-score-message" class="mt-2 text-info"></div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Update Score</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="update-tournament-form-container" class="mt-4" style="display:none;">
+            <h3>Update Tournament</h3>
+            <form id="update-tournament-form">
+                <div class="mb-3">
+                    <label for="update-tournament-id" class="form-label">Tournament ID</label>
+                    <input type="number" class="form-control" id="update-tournament-id" required>
+                </div>
+                <div class="mb-3">
+                    <label for="update-winner" class="form-label">Winner ID</label>
+                    <input type="text" class="form-control" id="update-winner">
+                </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn btn-primary">Update Tournament</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="mt-5">
+            <h3>Teams</h3>
+            <table id="teams-table" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Team Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3">Click "View All Teams" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="container py-5">
+        <div class="mt-5">
+            <h3>Players</h3>
+            <table id="players-table" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Country</th>
+                        <th>Team</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="5">Click "View All Players" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).ready(function () {
+                $('#get-tournaments').on('click', function () {
+                    $.ajax({
+                        url: "/tournaments/all",
+                        method: "GET",
+                        success: function (response) {
+                            let rows = '';
+                            if (response.tournaments.length > 0) {
+                                response.tournaments.forEach(function (tournament) {
+                                    rows += `
+                                        <tr>
+                                            <td>${tournament.id}</td>
+                                            <td>${tournament.title}</td>
+                                            <td>${tournament.prize}</td>
+                                            <td>${tournament.winner ? tournament.winner : 'No winner yet'}</td>
+                                        </tr>
+                                    `;
+                                });
+                            } else {
+                                rows = `
+                                    <tr>
+                                        <td colspan="4">No tournaments available.</td>
+                                    </tr>
+                                `;
+                            }
+                            $('#tournaments-table tbody').html(rows);
+                        },
+                        error: function (xhr) {
+                            alert(`Failed to load tournaments: ${xhr.responseText}`);
+                        }
+                    });
+                });
+            });
+
+            $('#load-players').on('click', function () {
+                $.ajax({
+                    url: "{{ url_for('player.all_players') }}",
+                    method: "GET",
+                    success: function (response) {
+                        let rows = '';
+                        if (response.players.length > 0) {
+                            response.players.forEach(function (player) {
+                                rows += `<tr>
+                                            <td>${player.id}</td>
+                                            <td>${player.first_name} ${player.second_name}</td>
+                                            <td>${player.country}</td>
+                                            <td>${player.team ? player.team : 'No team assigned'}</td>
+                                            <td>
+                                                <button class="btn btn-danger delete-player" data-id="${player.id}">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>`;
+                            });
+                        } else {
+                            rows = `<tr>
+                                        <td colspan="5">No players available.</td>
+                                    </tr>`;
+                        }
+                        $('#players-table tbody').html(rows);
+                    },
+                    error: function () {
+                        alert('Failed to load players. Please try again later.');
+                    }
+                });
+            });
+
+            $('#players-table').on('click', '.delete-player', function () {
+                const playerId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this player?')) {
+                    $.ajax({
+                        url: `/player/${playerId}`,
+                        method: 'DELETE',
+                        success: function () {
+                            alert(`Player with ID=${playerId} successfully deleted!`);
+                            $('#load-players').click();
+                        },
+                        error: function (xhr) {
+                            alert(`Failed to delete player ${playerId}: ${xhr.responseText}`);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#load-teams').on('click', function () {
+                $.ajax({
+                    url: "{{ url_for('team.all_teams') }}",
+                    method: "GET",
+                    success: function (response) {
+                        let rows = '';
+                        if (response.teams.length > 0) {
+                            response.teams.forEach(function (team) {
+                                rows += `<tr>
+                                            <td>${team.id}</td>
+                                            <td>${team.name}</td>
+                                            <td>
+                                                <button class="btn btn-danger delete-team" data-id="${team.id}">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                         </tr>`;
+                            });
+                        } else {
+                            rows = `<tr>
+                                        <td colspan="3">No teams available.</td>
+                                    </tr>`;
+                        }
+                        $('#teams-table tbody').html(rows);
+                    },
+                    error: function () {
+                        alert('Failed to load teams. Please try again later.');
+                    }
+                });
+            });
+
+            $('#teams-table').on('click', '.delete-team', function () {
+                const teamId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this team?')) {
+                    $.ajax({
+                        url: `/team/${teamId}`,
+                        method: 'DELETE',
+                        success: function () {
+                            alert(`Team ${teamId} successfully deleted!`);
+                            $('#load-teams').click();
+                        },
+                        error: function (xhr) {
+                            alert(`Failed to delete team ${teamId}: ${xhr.responseText}`);
+                        }
+                    });
+                }
+            });
+
+            $('#get-player-matches').on('click', function () {
+                $.ajax({
+                    url: "/match/playerMatch",
+                    method: "GET",
+                    success: function (response) {
+                        let rows = '';
+                        if (response.length > 0) {
+                            response.forEach(function (match) {
+                                let players = match.players.join(", ");
+                                rows += `
+                                    <tr>
+                                        <td>${match.match_id}</td>
+                                        <td>${match.title}</td>
+                                        <td>${match.played_at}</td>
+                                        <td>${match.match_format_name}</td>
+                                        <td>${players}</td>
+                                    </tr>
+                                `;
+                            });
+                        } else {
+                            rows = `
+                                <tr>
+                                    <td colspan="5">No player matches available.</td>
+                                </tr>
+                            `;
+                        }
+                        $('#player-matches-table tbody').html(rows);
+                    },
+                    error: function (xhr) {
+                        alert(`Failed to load player matches: ${xhr.responseText}`);
+                    }
+                });
+            });
+
+            $('#get-team-matches').on('click', function () {
+                $.ajax({
+                    url: "/match/teamMatch",
+                    method: "GET",
+                    success: function (response) {
+                        let rows = '';
+                        if (response.length > 0) {
+                            response.forEach(function (match) {
+                                let players = match.players.join(", ");
+                                rows += `
+                                    <tr>
+                                        <td>${match.match_id}</td>
+                                        <td>${match.title}</td>
+                                        <td>${match.played_at}</td>
+                                        <td>${match.match_format_name}</td>
+                                        <td>${players}</td>
+                                    </tr>
+                                `;
+                            });
+                        } else {
+                            rows = `
+                                <tr>
+                                    <td colspan="5">No player matches available.</td>
+                                </tr>
+                            `;
+                        }
+                        $('#team-matches-table tbody').html(rows);
+                    },
+                    error: function (xhr) {
+                        alert(`Failed to load team matches: ${xhr.responseText}`);
+                    }
+                });
+            });
+
+            $('#player-match-score-form-btn').on('click', function () {
+                $('#player-match-score-form-container').toggle();
+            });
+
+            $('#player-match-score-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const matchId = $('#match-id').val();
+                const playerId = $('#player-id').val();
+                const score = $('#player-score').val();
+
+                if (!matchId || !playerId || !score) {
+                    alert('Please fill in all fields correctly.');
+                    return;
+                }
+
+                $.ajax({
+                    url: `/match/playerMatchScore/${matchId}`,
+                    method: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        player_id: [playerId],
+                        score: [parseInt(score)]
+                    }),
+                    success: function (response) {
+                        alert("Player match score updated successfully!");
+                        $('#player-match-score-form')[0].reset();
+                    },
+                    error: function (xhr) {
+                        alert(`Error: ${xhr.responseText}`);
+                    }
+                });
+            });
+
+            $('#team-match-score-form-btn').on('click', function () {
+                $('#team-match-score-form-container').toggle();
+            });
+
+            $('#team-match-score-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const matchId = $('#team-match-id').val();
+                const teamId = $('#team-id').val();
+                const score = $('#team-score').val();
+
+                if (!matchId || !teamId || !score) {
+                    alert('Please fill in all fields correctly.');
+                    return;
+                }
+
+                $.ajax({
+                    url: `/match/teamMatchScore/${matchId}`,
+                    method: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        team_id: [teamId],
+                        score: [parseInt(score)]
+                    }),
+                    success: function (response) {
+                        alert("Team match score updated successfully!");
+                        $('#team-match-score-form')[0].reset();
+                    },
+                    error: function (xhr) {
+                        alert(`Error: ${xhr.responseText}`);
+                    }
+                });
+            });
+
+            $('#knockout-tournament-score-form-btn').on('click', function () {
+                $('#knockout-tournament-score-form-container').toggle();
+            });
+
+            $('#knockout-tournament-score-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const tournamentId = $('#tournament-id').val();
+                const scoreOne = $('#score-one').val();
+                const scoreTwo = $('#score-two').val();
+
+                if (!tournamentId || !scoreOne || !scoreTwo || parseInt(scoreOne) < 0 || parseInt(scoreTwo) < 0 || parseInt(scoreOne) === parseInt(scoreTwo)) {
+                    alert('Invalid scores: Ensure scores are positive and not equal.');
+                    return;
+                }
+
+                $.ajax({
+                    url: `/tournaments/knockout/set_score/matchup/${tournamentId}`,
+                    method: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        score_one: parseInt(scoreOne),
+                        score_two: parseInt(scoreTwo)
+                    }),
+                    success: function (response) {
+                        alert("Scores updated successfully!");
+                        $('#knockout-tournament-score-form')[0].reset();
+                        $('#knockout-tournament-score-form-container').hide();
+                    },
+                    error: function (xhr) {
+                        alert(`Error: ${xhr.responseText}`);
+                    }
+                });
+            });
+
+            $('#league-tournament-score-form-btn').on('click', function () {
+                $('#league-tournament-score-form-container').toggle();
+            });
+
+            $('#league-tournament-score-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const leagueId = $('#league-id').val();
+                const scoreOne = $('#league-score-one').val();
+                const scoreTwo = $('#league-score-two').val();
+
+                console.log(leagueId, scoreOne, scoreTwo)
+
+                $.ajax({
+                    url: `/tournaments/league/set_score/matchup/${leagueId}`,
+                    method: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify({
+                        score_one: parseInt(scoreOne),
+                        score_two: parseInt(scoreTwo)
+                    }),
+                    success: function (response) {
+                        alert("Scores updated successfully!");
+                        $('#league-tournament-score-form')[0].reset();
+                        $('#league-tournament-score-form-container').hide();
+                    },
+                    error: function (xhr) {
+                        alert(`Error: ${xhr.responseText}`);
+                    }
+                });
+            });
+
+            $('#update-tournament').on('click', function () {
+                $('#update-tournament-form-container').toggle();
+            });
+
+            $('#update-tournament-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const tournamentId = $('#update-tournament-id').val();
+                const winner = $('#update-winner').val();
+
+                $.ajax({
+                    url: `/tournaments/set_winner/${tournamentId}`,
+                    method: "PUT",
+                    data: JSON.stringify({
+                        winner: winner
+                    }),
+                    contentType: "application/json",
+                    success: function (response) {
+                        alert("Tournament updated successfully!");
+                        $('#update-tournament-form')[0].reset();
+                        $('#update-tournament-form-container').hide();
+                    },
+                    error: function (xhr) {
+                        alert(`Failed to update tournament: ${xhr.responseText}`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

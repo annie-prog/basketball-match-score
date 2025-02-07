@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Player Match</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <div class="card shadow-sm p-4">
+            <h2>Create Player Match</h2>
+            <form id="create-player-match-form">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Match Title</label>
+                    <input type="text" class="form-control" id="title" placeholder="Enter match title" required>
+                </div>
+                <div class="mb-3">
+                    <label for="played_at" class="form-label">Match Date</label>
+                    <input type="date" class="form-control" id="played_at" required>
+                </div>
+                <input type="hidden" id="match_format_id" value="2">
+                <div class="mb-3">
+                    <label for="player1" class="form-label">Player 1 ID</label>
+                    <input type="text" class="form-control" id="player1" required>
+                </div>
+                <div class="mb-3">
+                    <label for="player2" class="form-label">Player 2 ID</label>
+                    <input type="text" class="form-control" id="player2" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Create Match</button>
+            </form>
+            <div id="error-message" class="alert alert-danger mt-3 d-none" role="alert"></div>
+        </div>
+        <button id="load-players" class="btn btn-info">View All Players</button>
+    </div>
+
+    <div class="container py-5">
+        <div class="mt-5">
+            <h3>Players</h3>
+            <table id="players-table" class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Second Name</th>
+                        <th>Country</th>
+                        <th>Team</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="6">Click "View All Players" to load data.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#load-players').on('click', function () {
+                $.ajax({
+                    url: "{{ url_for('player.all_players') }}",
+                    method: "GET",
+                    success: function (response) {
+                        let rows = '';
+                        if (response.players.length > 0) {
+                            response.players.forEach(function (player) {
+                                rows += `<tr>
+                                            <td>${player.id}</td>
+                                            <td>${player.first_name}</td>
+                                            <td>${player.second_name}</td>
+                                            <td>${player.country || 'N/A'}</td>
+                                            <td>${player.team || 'N/A'}</td>
+                                            <td>
+                                                <button class="btn btn-danger delete-player" data-id="${player.id}">
+                                                    Delete
+                                                </button>
+                                            </td>
+                                         </tr>`;
+                            });
+                        } else {
+                            rows = `<tr>
+                                        <td colspan="6">No players available.</td>
+                                    </tr>`;
+                        }
+                        $('#players-table tbody').html(rows);
+                    },
+                    error: function () {
+                        alert('Failed to load players. Please try again later.');
+                    }
+                });
+            });
+
+            $('#create-player-match-form').on('submit', function (e) {
+                e.preventDefault();
+
+                const title = $('#title').val();
+                const played_at = $('#played_at').val();
+                const player1 = $('#player1').val();
+                const player2 = $('#player2').val();
+                const match_format_id = $('#match_format_id').val();
+
+                $('#error-message').addClass('d-none').text('');
+
+                $.ajax({
+                    url: '/match/playerMatches/',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        title: title,
+                        played_at: played_at,
+                        match_format_id: match_format_id,
+                        participants: [{ name: player1 }, { name: player2 }]
+                    }),
+                    success: function (response) {
+                        alert('Match created successfully!');
+                    },
+                    error: function (xhr) {
+                        const errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : xhr.responseText || 'An unknown error occurred.';
+                        $('#error-message').removeClass('d-none').text(errorMessage);
+                    }
+                });
+            });
+
+            $('#players-table').on('click', '.delete-player', function () {
+                const playerId = $(this).data('id');
+                if (confirm('Are you sure you want to delete this player?')) {
+                    $.ajax({
+                        url: `/player/${playerId}`,
+                        method: 'DELETE',
+                        success: function () {
+                            alert(`Player ${playerId} successfully deleted!`);
+                            $('#load-players').click();
+                        },
+                        error: function (xhr) {
+                            alert(`Failed to delete player ${playerId}: ${xhr.responseText}`);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
