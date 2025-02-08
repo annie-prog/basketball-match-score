@@ -34,7 +34,7 @@ def all_tournaments():
     return jsonify({"tournaments": tournaments_data})
 
 @tournaments_blueprint.get('/{id}')
-def get_tournament_by_id(tournament_id: int):
+def get_tournament_by_id(tournament_id: int) -> dict:
     """
     Retrieve details of a specific tournament by ID.
 
@@ -48,7 +48,7 @@ def get_tournament_by_id(tournament_id: int):
     return tournament
 
 @tournaments_blueprint.route('/knockout', methods=['GET', 'POST'])
-def create_knockout_tournament():
+def create_knockout_tournament() -> str:
     """
     Create a new knockout tournament.
 
@@ -86,7 +86,7 @@ def create_knockout_tournament():
     return Successful("Success")
 
 @tournaments_blueprint.route('/set_winner/<int:tournament_id>', methods=['GET', 'PUT'])
-def set_tournament_winner(tournament_id: int):
+def set_tournament_winner(tournament_id: int) -> str:
     """
     Sets the winner for a given tournament.
     Ensures the user is authorized and the winner is a valid participant.
@@ -116,7 +116,7 @@ def set_tournament_winner(tournament_id: int):
     return Successful("Winner set successfully!")
 
 @tournaments_blueprint.put('/knockout/set_score/matchup/<int:match_id>')
-def set_scores(match_id: int):
+def set_scores(match_id: int) -> str:
     """
     Set scores for a specific matchup in a knockout tournament.
     """
@@ -137,9 +137,8 @@ def set_scores(match_id: int):
     tournaments_service.set_matchup_score(match_id, [score_one, score_two])
     return Successful('Scores updated successfully.')
 
-#========= Leagues ========
 @tournaments_blueprint.route('/league', methods=['GET', 'POST'])
-def create_league():
+def create_league() -> str:
     """
     Creates a new league tournament.
     Validates input data and ensures the user is authorized to create leagues.
@@ -179,7 +178,7 @@ def create_league():
     return Successful("Success")
 
 @tournaments_blueprint.put('/league/set_score/matchup/<int:league_id>')
-def set_league_score(league_id: int):
+def set_league_score(league_id: int) -> str:
     """
     Updates the scores for a specific matchup in a league tournament.
     Ensures the user is authorized and the matchup exists.

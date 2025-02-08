@@ -7,5 +7,4 @@ __pycache__/
 
 secrets.py
 
-.env
-venv/
+.venv/

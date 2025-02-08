@@ -75,13 +75,14 @@ CREATE TABLE tournament (
 );
 
 --
--- Table structure for table `user`
+-- Table structure for table `users`
 --
-CREATE TABLE user (
+CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   email VARCHAR NOT NULL,
   password VARCHAR NOT NULL,
-  role VARCHAR NOT NULL
+  role VARCHAR NOT NULL,
+  name VARCHAR NOT NULL
   CONSTRAINT email_UNIQUE UNIQUE (email)
 );
 

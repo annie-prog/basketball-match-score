@@ -61,7 +61,7 @@ def all_players():
     return jsonify({"players": players_data})
 
 @player_blueprint.route('/<int:player_id>', methods=['DELETE'])
-def delete_player(player_id: int):
+def delete_player(player_id: int) -> str:
     """
     Delete a player by their ID.
     Args:

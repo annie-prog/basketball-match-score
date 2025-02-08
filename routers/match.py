@@ -21,7 +21,7 @@ from common.responses import BadRequest, NotFound, Unauthorized, Successful, Int
 match_blueprint = Blueprint('match', __name__, url_prefix='/match')
 
 @match_blueprint.get('/playerMatch')
-def get_all_player_matches(sort: Sort | None = None):
+def get_all_player_matches(sort: Sort | None = None) -> list[dict[str, str | int]]:
     """
     Retrieve all player matches, optionally sorted.
     """
@@ -40,7 +40,7 @@ def get_all_player_matches(sort: Sort | None = None):
     ]
 
 @match_blueprint.get('/teamMatch')
-def get_all_team_matches(sort: Sort | None = None):
+def get_all_team_matches(sort: str | None = None) -> list[dict[str, str | int]]:
     """
     Retrieve all team matches, optionally sorted.
     """
@@ -59,7 +59,7 @@ def get_all_team_matches(sort: Sort | None = None):
     ]
 
 @match_blueprint.route('/playerMatches/', methods=['GET', 'POST'])
-def create_player_match():
+def create_player_match() -> str:
     """
     Create a player match or render the form for adding a match.
     """
@@ -100,7 +100,7 @@ def create_player_match():
         return BadRequest(f"Error: {e}")
 
 @match_blueprint.route('/teamMatches/', methods=['GET', 'POST'])
-def create_team_match():
+def create_team_match() -> str:
     """
     Create a team match or render the form for adding a team match.
     """
@@ -144,7 +144,7 @@ def create_team_match():
         return BadRequest(f"Validation error: {e}")
 
 @match_blueprint.put('/playerMatchScore/<int:match_id>')
-def update_player_match_score(match_id: int):
+def update_player_match_score(match_id: int) -> str:
     """
     Update player match scores.
     """
@@ -182,7 +182,7 @@ def update_player_match_score(match_id: int):
         return InternalServerError(f"Failed to update match scores: {str(e)}")
 
 @match_blueprint.put('/teamMatchScore/<int:team_id>')
-def update_team_match_score(team_id: int):
+def update_team_match_score(team_id: int) -> str:
     """
     Update team match scores.
     """

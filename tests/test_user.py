@@ -44,7 +44,8 @@ class UserBlueprintTests(TestCase):
         mock_create_user.return_value = MagicMock()
         with self.app.test_request_context(
             "/user/register", method="POST", data={
-                "email": "test@example.com", "password": "Valid@123", "role": "user"
+                "email": "test@example.com", "password": "Valid@123",
+                "role": "user", "name": "User1"
             }
         ):
             response = register()

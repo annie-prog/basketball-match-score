@@ -11,7 +11,7 @@ from data.models import (
 )
 from services import player_service, team_service
 
-def all_player_matches():
+def all_player_matches() -> tuple:
     """
     Fetches all player matches from the database. Optionally filters matches based 
     on the provided search string.
@@ -38,7 +38,7 @@ def all_player_matches():
 
     return (PlayerMatch.from_query_result(PlayerMatchData(*obj)) for obj in flattened.values())
 
-def all_team_matches():
+def all_team_matches() -> tuple:
     """
     Fetches all team matches from the database. Optionally filters matches based 
     on the provided search string.
@@ -64,7 +64,7 @@ def all_team_matches():
 
     return (TeamMatch.from_query_result(TeamMatchData(*obj)) for obj in flattened.values())
 
-def sort(categories: list[Match], *, attribute="title", reverse=False):
+def sort(categories: list[Match], *, attribute="title", reverse=False) -> list:
     """
     Sorts a list of Match objects by a specified attribute.
     """
@@ -83,7 +83,7 @@ def sort(categories: list[Match], *, attribute="title", reverse=False):
 
     return sorted(categories, key=sort_fn, reverse=reverse)
 
-def get_with_players(match_id: int):
+def get_with_players(match_id: int) -> dict | None:
     """
     Retrieves match details along with player information for a specific match.
     """
@@ -107,7 +107,7 @@ def get_with_players(match_id: int):
         match,
         [PlayerMatchInfo.from_query_result(*row) for row in players_data])
 
-def create_player_response_object(match: Match, players: list[PlayerMatchInfo]):
+def create_player_response_object(match: Match, players: list[PlayerMatchInfo]) -> dict:
     """
     Creates a response object for a match with associated player information.
     """
@@ -119,7 +119,7 @@ def create_player_response_object(match: Match, players: list[PlayerMatchInfo]):
         'participants': players
     }
 
-def get_with_teams(match_id: int):
+def get_with_teams(match_id: int) -> dict | None:
     """
     Retrieves match details along with team information for a specific match.
     """
@@ -141,7 +141,7 @@ def get_with_teams(match_id: int):
         match,
         [TeamMatchInfo.from_query_result(*row) for row in players_data])
 
-def create_team_response_object(match: Match, teams: list[TeamMatchInfo]):
+def create_team_response_object(match: Match, teams: list[TeamMatchInfo]) -> dict:
     """
     Creates a response object for a match with associated team information.
     """
@@ -153,7 +153,7 @@ def create_team_response_object(match: Match, teams: list[TeamMatchInfo]):
         'participants': teams
     }
 
-def create_match_with_players(match: Match, participants: list[dict]):
+def create_match_with_players(match: Match, participants: list[dict]) -> None:
     """
     Creates a new match and associates it with a list of player participants.
     """
@@ -181,7 +181,7 @@ def create_match_with_players(match: Match, participants: list[dict]):
             (player.id, match.id)
         )
 
-def create_with_teams(match: Match, teams: list[str] ):
+def create_with_teams(match: Match, teams: list[str]) -> None:
     """
     Creates a new match and associates it with a list of team participants.
     """
@@ -217,7 +217,7 @@ def match_exists(match_id: int) -> bool:
     )
     return len(data) > 0
 
-def update_player_match_score(match_id: int, match_update: PlayerMatchDetailUpdate):
+def update_player_match_score(match_id: int, match_update: PlayerMatchDetailUpdate) -> None:
     """
     Updates the scores for player participants in a specific match.
     If a player does not already have a record for the match, a new entry is created.
@@ -240,7 +240,7 @@ def update_player_match_score(match_id: int, match_update: PlayerMatchDetailUpda
                 (player, match_id, score)
             )
 
-def update_team_match_score(match_id: int, match_update: TeamMatchDetailUpdate):
+def update_team_match_score(match_id: int, match_update: TeamMatchDetailUpdate) -> None:
     """
     Updates the scores for team participants in a specific match.
     """

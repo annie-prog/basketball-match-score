@@ -2,7 +2,7 @@
 Module for user-related operations, including registration, login, and dashboard management.
 """
 
-from flask import request, Blueprint, render_template, redirect, url_for, make_response, jsonify
+from flask import request, Blueprint, render_template, redirect, url_for, make_response, jsonify, Response
 from services import user_service
 from services.user_service import create_token, find_user
 from data.models import LogInfo
@@ -10,7 +10,9 @@ from data.models import LogInfo
 user_blueprint = Blueprint('user', __name__, url_prefix='/user')
 
 def _is_valid_password(password: str) -> bool:
-    """Validate password strength."""
+    """
+    Validate password strength.
+    """
     if len(password) < 8:
         return False
     if not any(char.isdigit() for char in password):
@@ -24,7 +26,7 @@ def _is_valid_password(password: str) -> bool:
     return True
 
 @user_blueprint.route('/register', methods=['GET', 'POST'])
-def register():
+def register() -> str:
     """
     Handle user registration.
     Renders the registration form and processes user registration on POST.
@@ -62,7 +64,7 @@ def register():
     return render_template('register.html', errors=errors, roles=roles)
 
 @user_blueprint.route('/login', methods=['GET', 'POST'])
-def login():
+def login() -> Response:
     """
     Handle user login.
     Renders the login form and authenticates user credentials on POST.
@@ -100,7 +102,7 @@ def get_logged_in_user():
     return None
 
 @user_blueprint.route('/all', methods=['GET'])
-def all_users():
+def all_users() -> Response:
     """
     Retrieve all registered users as JSON.
     Returns:
@@ -118,7 +120,7 @@ def all_users():
     return jsonify({"users": users_data})
 
 @user_blueprint.route('/dashboard_user')
-def dashboard_user():
+def dashboard_user() -> Response:
     """
     Render the user dashboard if logged in, otherwise redirect to login.
     """
@@ -128,7 +130,7 @@ def dashboard_user():
     return redirect(url_for('user.login'))
 
 @user_blueprint.route('/dashboard_admin')
-def dashboard_admin():
+def dashboard_admin() -> Response:
     """
     Render the admin dashboard if logged in as admin, otherwise redirect to login.
     """
@@ -138,7 +140,7 @@ def dashboard_admin():
     return redirect(url_for('user.login'))
 
 @user_blueprint.route('/dashboard_director')
-def dashboard_director():
+def dashboard_director() -> Response:
     """
     Render the director dashboard if logged in as director, otherwise redirect to login.
     """
@@ -148,7 +150,7 @@ def dashboard_director():
     return redirect(url_for('user.login'))
 
 @user_blueprint.route('/logout')
-def logout():
+def logout() -> Response:
     """
     Log out the user by clearing the access token cookie.
     """
@@ -157,7 +159,7 @@ def logout():
     return response
 
 @user_blueprint.route('/delete_user', methods=['POST'])
-def delete_user_route():
+def delete_user_route() -> Response:
     """
     Handle the deletion of a user based on their ID.
     """

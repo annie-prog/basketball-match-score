@@ -14,7 +14,7 @@ def all_formats():
     query = read_query("SELECT * from match_format")
     return (MatchFormat(id=t[0], name=t[1]) for t in query)
 
-def get_by_id(match_format_id: int):
+def get_by_id(match_format_id: int) -> MatchFormat | None:
     """
     Retrieve a match format by its ID.
     Returns:
@@ -27,7 +27,7 @@ def get_by_id(match_format_id: int):
     )
     return next((MatchFormat.from_query_result(*row) for row in format_data), None)
 
-def sort(categories: list[MatchFormat], *, attribute="name", reverse=False):
+def sort(categories: list[MatchFormat], *, attribute="name", reverse=False) -> list[MatchFormat]:
     """
     Sort a list of match formats by the given attribute.
     Returns:

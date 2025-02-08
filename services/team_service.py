@@ -5,8 +5,9 @@ deleting, and listing team data.
 
 from data import database
 from data.models import Team
+from typing import Generator
 
-def create_team(team: Team):
+def create_team(team: Team) -> Team | None:
     """
     Creates a new team if it does not already exist.
     """
@@ -25,14 +26,14 @@ def create_team(team: Team):
 
     return team
 
-def all_teams():
+def all_teams() -> Generator[Team, None, None]:
     """
     Retrieves all teams from the database.
     """
     query = database.read_query("SELECT * from team")
     return (Team(id=t[0], name=t[1]) for t in query)
 
-def get_team_by_id(team_id: int):
+def get_team_by_id(team_id: int) -> list[Team] | None:
     """
     Retrieves a team by its ID.
     """
@@ -41,21 +42,21 @@ def get_team_by_id(team_id: int):
         return None
     return [Team(id=t[0], name=t[1]) for t in query]
 
-def get_team_names():
+def get_team_names() -> list[str]:
     """
     Retrieves the names of all teams.
     """
     team_names = database.read_query("SELECT name from team")
     return [i[0] for i in team_names]
 
-def get_team_id(name: str):
+def get_team_id(name: str) -> int:
     """
     Retrieves a team's ID by its name.
     """
     team_id = database.read_query("SELECT id from team where name = %s", (name,))
     return team_id[0][0]
 
-def delete_team(team_id: int):
+def delete_team(team_id: int) -> None:
     """
     Deletes a team by its ID.
     """

@@ -4,8 +4,9 @@ updating data in the PostgreSQL database.
 """
 
 import psycopg2
+from psycopg2.extensions import connection
 
-def _get_connection():
+def _get_connection() -> connection:
     """
     Establishes and returns a connection to the PostgreSQL database.
     """
@@ -17,7 +18,7 @@ def _get_connection():
         database='basketball_matches'
     )
 
-def read_query(sql: str, sql_params=()):
+def read_query(sql: str, sql_params: tuple = ()) -> list[tuple]:
     """
     Executes a read query on the database and returns the results.
     """
@@ -26,7 +27,7 @@ def read_query(sql: str, sql_params=()):
             cursor.execute(sql, sql_params)
             return cursor.fetchall()
 
-def insert_query(sql: str, sql_params=()) -> int:
+def insert_query(sql: str, sql_params: tuple = ()) -> int | None:
     """
     Executes an insert query on the database and returns the generated ID
     (if "RETURNING" is in the SQL query), or the last inserted ID.
@@ -48,7 +49,7 @@ def insert_query(sql: str, sql_params=()) -> int:
             except psycopg2.Error:
                 return None
 
-def update_query(sql: str, sql_params=()) -> bool:
+def update_query(sql: str, sql_params: tuple = ()) -> bool:
     """
     Executes an update query on the database and returns whether any rows were affected.
     """

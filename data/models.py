@@ -54,7 +54,7 @@ class Player(BaseModel):
     team: str | None = None
 
     @classmethod
-    def from_query_result(cls, player_data: PlayerData):
+    def from_query_result(cls, player_data: PlayerData) -> "Player":
         """
         Creates a Player instance from query results.
         """
@@ -91,7 +91,7 @@ class User(BaseModel):
     role: Role | None = None
     name : str
 
-    def validate_email(self, values):
+    def validate_email(self, values: dict) -> dict:
         """
         Validates the email format for the user.
         """
@@ -110,7 +110,7 @@ class User(BaseModel):
         return bool(re.match(email_regex, email))
 
     @classmethod
-    def from_query_result(cls, user: UserInfo):
+    def from_query_result(cls, user: UserInfo) -> "User":
         """
         Creates a User instance from database query results.
         """
@@ -139,7 +139,7 @@ class LogInfo(BaseModel):
     email: str
     password: str
 
-    def validate_email(self, values):
+    def validate_email(self, values: dict) -> dict:
         """
         Validates the email format for the login information.
         """
@@ -181,7 +181,7 @@ class Match(BaseModel):
     match_format_id: int | None
 
     @classmethod
-    def from_query_result(cls, match_id, title, played_at, match_format_id):
+    def from_query_result(cls, match_id: int, title: str, played_at: date, match_format_id: int) -> "Match":
         """
         Creates a Match instance from query results.
         """
@@ -211,7 +211,7 @@ class PlayerMatch(BaseModel):
     player_name: list[str]
 
     @classmethod
-    def from_query_result(cls, player_match: PlayerMatchData):
+    def from_query_result(cls, player_match: PlayerMatchData) -> "PlayerMatch":
         """
         Creates a PlayerMatch instance from query results.
         """
@@ -225,7 +225,7 @@ class TeamMatch(BaseModel):
         match_id (int): The unique identifier for the match.
         title (str): The title or description of the match.
         played_at (date): The date the match was played.
-        match_format_name (str): The name of the match format (e.g., knockout, round robin).
+        match_format_name (str): The name of the match format.
         team_id (list[int]): A list of team IDs participating in the match.
         team_name (list[str]): A list of team names participating in the match.
     """
@@ -237,7 +237,7 @@ class TeamMatch(BaseModel):
     team_name: list[str]
 
     @classmethod
-    def from_query_result(cls, team_match_data: TeamMatchData):
+    def from_query_result(cls, team_match_data: TeamMatchData) -> "TeamMatch":
         """
         Creates a TeamMatch instance from query results.
         """
@@ -259,7 +259,7 @@ class PlayerMatchInfo(BaseModel):
     score: int
 
     @classmethod
-    def from_query_result(cls,player_id, player_name, country_id, score):
+    def from_query_result(cls,player_id: int, player_name: str, country_id: int, score: int) -> "PlayerMatchInfo":
         """
         Creates a PlayerMatchInfo instance from query results.
         """
@@ -284,7 +284,7 @@ class TeamMatchInfo(BaseModel):
     score: int
 
     @classmethod
-    def from_query_result(cls,team_id, team_name, score):
+    def from_query_result(cls, team_id: int, team_name: str, score: int) -> "TeamMatchInfo":
         """
         Creates a TeamMatchInfo instance from query results.
         """
@@ -307,7 +307,7 @@ class MatchUpdate(BaseModel):
 
 class MatchFormat(BaseModel):
     """
-    Model representing the format of a match (e.g., knockout, round robin).
+    Model representing the format of a match (e.g., players, teams).
 
     Attributes:
         id (int | None): The unique identifier for the match format.
@@ -317,7 +317,7 @@ class MatchFormat(BaseModel):
     name: str
 
     @classmethod
-    def from_query_result(cls, match_format_id, name):
+    def from_query_result(cls, match_format_id: int, name: str):
         """
         Creates a MatchFormat instance from query results.
         """
@@ -391,7 +391,7 @@ class Tournament(BaseModel):
     matchups:  list[MatchUp] | None = []
 
     @classmethod
-    def from_query_result(cls, tournament_data: TournamentData):
+    def from_query_result(cls, tournament_data: TournamentData) -> "Tournament":
         """
         Creates a Tournament instance from query results.
         """
@@ -405,7 +405,7 @@ class TournamentResponseModel(BaseModel):
         id (int | None): The unique identifier for the tournament.
         title (str): The title of the tournament.
         prize (str | None): The prize associated with the tournament, if applicable.
-        format (str): The format of the tournament (e.g., knockout, round robin).
+        format (str): The format of the tournament (e.g., knockout, league).
         winner (int | str): The ID or name of the winner of the tournament, if available.
         players (list[Player]): A list of players participating in the tournament, if available.
         matchups (list[MatchUp]): A list of matchups for the tournament, if available.

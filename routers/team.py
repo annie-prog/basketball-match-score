@@ -50,7 +50,7 @@ def all_teams():
     return jsonify({"teams": teams_data})
 
 @team_blueprint.route('/<int:team_id>', methods=['DELETE'])
-def delete_team(team_id: int):
+def delete_team(team_id: int) -> str:
     """
     Delete a team by its ID.
     Args:

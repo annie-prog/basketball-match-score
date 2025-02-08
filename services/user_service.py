@@ -5,26 +5,19 @@ profiles, promoting users to specific roles, and linking user accounts with play
 profiles.
 """
 
-from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 from hashlib import blake2s
 import jwt
-import os
 from data.models import LogInfo, User, UserInfo
 from data import database
+from data.secrets import SALT, SECRET_KEY, ALGO
 
-load_dotenv()
-
-SECRET_KEY = os.getenv("SECRET_KEY")
-SALT = os.getenv("SALT")
-ALGO = os.getenv("ALGO")
-
-def _hash(password: str):
+def _hash(password: str) -> str:
     """Hashes the password using blake2s with a salt."""
     password += SALT
     return blake2s(password.encode()).hexdigest()
 
-def create_token(user: User):
+def create_token(user: User) -> str:
     """Generates a JWT token for the given user."""
     expiration = datetime.now(timezone.utc) + timedelta(minutes=60)
     payload = {
@@ -36,12 +29,12 @@ def create_token(user: User):
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGO)
     return token
 
-def from_token(token: str):
+def from_token(token: str) -> LogInfo:
     """Decodes a JWT token into a LogInfo object."""
     decoded = jwt.decode(token, SECRET_KEY, algorithms=ALGO)
     return LogInfo(email=decoded["email"], password=decoded["password"])
 
-def create_user(loginfo: LogInfo, name: str, role: str = "user"):
+def create_user(loginfo: LogInfo, name: str, role: str = "user") -> User:
     """Creates a new user in the database."""
     if role not in ["user", "admin", "director"]:
         raise ValueError(f"Invalid role: {role}")
@@ -58,7 +51,7 @@ def create_user(loginfo: LogInfo, name: str, role: str = "user"):
 
     return User.from_query_result(user_info)
 
-def find_user(loginfo: LogInfo):
+def find_user(loginfo: LogInfo) -> User | None:
     """Finds a user by their email and password."""
     h_password = _hash(loginfo.password)
 
@@ -72,7 +65,7 @@ def find_user(loginfo: LogInfo):
 
     return User.from_query_result(user_info)
 
-def promote_to_director(user: User):
+def promote_to_director(user: User) -> bool:
     """Promotes a user to the director role."""
     updated = database.update_query(
         "UPDATE users SET role = %s WHERE id = %s", 
@@ -80,12 +73,12 @@ def promote_to_director(user: User):
     )
     return updated > 0
 
-def all_users():
+def all_users() -> list[User]:
     """Fetches all users from the database."""
     query = database.read_query("SELECT * FROM users")
     return [User.from_query_result(UserInfo(*row)) for row in query]
 
-def get_user_by_id(user_id: int):
+def get_user_by_id(user_id: int) -> User | None:
     """Fetches a user by their ID."""
     data = database.read_query("SELECT * from users where id = %s", (user_id,))
     user = data[0]
@@ -96,7 +89,7 @@ def get_user_by_id(user_id: int):
 
     return User.from_query_result(user_info)
 
-def delete_user(user_id: int):
+def delete_user(user_id: int) -> None:
     """Delete a user by their ID."""
     database.update_query("DELETE from users where id = %s",
         (user_id,)

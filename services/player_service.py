@@ -7,17 +7,17 @@ from data import database
 from data.models import Player, User, UserInfo, PlayerData
 from services import team_service
 
-def country_names():
+def country_names() -> list[str]:
     """Fetch all country names from the database."""
     names = database.read_query("SELECT name from country")
     return [i[0] for i in names]
 
-def country_id(name: str):
+def country_id(name: str) -> int:
     """Fetch the ID of a country given its name."""
     c_id = database.read_query("SELECT id from country where name = %s", (name,))
     return c_id[0][0]
 
-def create_player(player: Player):
+def create_player(player: Player) -> Player | None:
     """Create a new player in the database."""
     if player.country not in country_names() or (player.team and player.team not in
                                                 team_service.get_team_names()):
@@ -32,7 +32,7 @@ def create_player(player: Player):
     player.id = generated_id
     return player
 
-def all_players(country: str = None, team: str = None):
+def all_players(country: str = None, team: str = None) -> list[Player]:
     """Retrieve a list of players filtered by country or team."""
     query = """SELECT player.id, first_name, second_name, country.name, team.name
                FROM player
@@ -53,7 +53,7 @@ def all_players(country: str = None, team: str = None):
     players = database.read_query(query, params)
     return [Player.from_query_result(PlayerData(*p)) for p in players]
 
-def get_player_by_id(player_id: int):
+def get_player_by_id(player_id: int) -> Player | None:
     """Retrieve a player by their ID."""
     player = database.read_query(
         """SELECT player.id, first_name, second_name, country.name, team.name
@@ -67,19 +67,19 @@ def get_player_by_id(player_id: int):
     player_data = PlayerData(*player[0])
     return Player.from_query_result(player_data) if player else None
 
-def null_team(team_id: int):
+def null_team(team_id: int) -> None:
     """Set the team_id of all players in a team to NULL."""
     database.update_query("UPDATE player set team_id = %s where team_id = %s",
         (None, team_id)
     )
 
-def delete_player(player_id: int):
+def delete_player(player_id: int) -> None:
     """Delete a player by their ID."""
     database.update_query("DELETE from player where id = %s",
         (player_id,)
     )
 
-def get_tournament_players(tournament_id: int):
+def get_tournament_players(tournament_id: int) -> list[Player]:
     """
     Retrieve all players participating in a tournament.
     """
@@ -110,7 +110,7 @@ def get_tournament_players(tournament_id: int):
 
     return unique_players
 
-def get_player_by_name(fullname):
+def get_player_by_name(fullname: str) -> Player | None:
     """Retrieve a player by their full name."""
     first_name, second_name = fullname.split(" ")
 
@@ -124,7 +124,7 @@ def get_player_by_name(fullname):
     player_info = PlayerData(player[0], player[1], player[2], str(player[3]), str(player[4]))
     return Player.from_query_result(player_info)
 
-def create_player_by_name(fullname: str):
+def create_player_by_name(fullname: str) -> None:
     """Create a player profile using only their name."""
     database.insert_query(
         """INSERT INTO player (first_name, second_name, team_id, country_id)
@@ -132,7 +132,7 @@ def create_player_by_name(fullname: str):
         (fullname[0], fullname[1], None, None)
     )
 
-def create_unknown_participants_profile(participants: list[str]):
+def create_unknown_participants_profile(participants: list[str]) -> list[list[str]]:
     """
     Create profiles for participants that do not already exist in the database.
     """

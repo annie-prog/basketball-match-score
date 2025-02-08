@@ -11,7 +11,7 @@ from data.models import (MatchUp, Tournament,
 from data.database import insert_query, read_query, update_query
 from services import player_service
 
-def all_tournaments():
+def all_tournaments() -> list[dict]:
     """
     Retrieves all tournaments and returns them as a list of dictionaries,
     including the full name of the winner.
@@ -48,7 +48,7 @@ def all_tournaments():
 
     return list(flattened.values())
 
-def get_matchup(matchup_id: int):
+def get_matchup(matchup_id: int) -> MatchUp | None:
     """
     Retrieves a specific matchup by its ID.
     """
@@ -66,7 +66,7 @@ def get_matchup(matchup_id: int):
         player_one=m[4], player_two=m[5], player_one_score=m[6], player_two_score=m[7]
     )
 
-def get_tournament_matchups(tournament_id: int):
+def get_tournament_matchups(tournament_id: int) -> list[MatchUp] | None:
     """
     Retrieves all matchups for a specific tournament.
     """
@@ -84,7 +84,7 @@ def get_tournament_matchups(tournament_id: int):
         for m in data
     ]
 
-def get_by_tournament_id(tournament_id: int):
+def get_by_tournament_id(tournament_id: int) -> TournamentResponseModel | None:
     """
     Retrieves detailed tournament information, including matchups and players, by tournament ID.
     """
@@ -108,7 +108,7 @@ def get_by_tournament_id(tournament_id: int):
         matchups=matchups
     )
 
-def get_tournament_format(tournament_id: int):
+def get_tournament_format(tournament_id: int) -> str | None:
     """
     Retrieves the format of a tournament by its ID.
     """
@@ -123,13 +123,13 @@ def get_tournament_format(tournament_id: int):
     tournament_format = data[0]
     return tournament_format[0]
 
-def check_for_existing_player(player_id: int):
+def check_for_existing_player(player_id: int) -> bool:
     """
     Checks if a player exists by their ID.
     """
     return any(read_query('select * from player where id = %s',(player_id,)))
 
-def create_tournament(tournament: Tournament):
+def create_tournament(tournament: Tournament) -> Tournament:
     """
     Creates a new tournament and inserts it into the database.
     """
@@ -140,7 +140,7 @@ def create_tournament(tournament: Tournament):
     tournament.id = generated_id
     return tournament
 
-def create_random_matchups(tournament: Tournament, home: str, away: str, starting_date: date):
+def create_random_matchups(tournament: Tournament, home: str, away: str, starting_date: date) -> None:
     """
     Creates a random matchup between two players and inserts it into the matchups table.
     """
@@ -153,7 +153,7 @@ def create_random_matchups(tournament: Tournament, home: str, away: str, startin
         (tournament.id, starting_date, 1, player1.id, player2.id, None, None)
     )
 
-def create_empty_matchup(tournament: Tournament, matchup_date: date, phase: int):
+def create_empty_matchup(tournament: Tournament, matchup_date: date, phase: int) -> None:
     """
     Creates an empty matchup entry in the database for the given tournament and phase.
     """
@@ -163,7 +163,7 @@ def create_empty_matchup(tournament: Tournament, matchup_date: date, phase: int)
         (tournament.id, matchup_date, phase, None, None, None, None)
     )
 
-def create_empty_phase(tournament: Tournament, tournament_date: date, phase: int, p_count: int):
+def create_empty_phase(tournament: Tournament, tournament_date: date, phase: int, p_count: int) -> None:
     """
     Creates empty matchups for a specific phase in a tournament.
     """
@@ -172,7 +172,7 @@ def create_empty_phase(tournament: Tournament, tournament_date: date, phase: int
         create_empty_matchup(tournament, tournament_date, phase)
 
 def create_knockout_tournament(tournament: Tournament,
-                               participants: list[str], starting_date: date):
+                               participants: list[str], starting_date: date) -> None:
     """
     Creates a knockout tournament with matchups based on the given participants and starting date.
     """
@@ -210,7 +210,7 @@ def create_knockout_tournament(tournament: Tournament,
 
     return jsonify({"message": "Knockout tournament created successfully!"}), 201
 
-def set_matchup_score(matchup_id: int, scores: list[int]):
+def set_matchup_score(matchup_id: int, scores: list[int]) -> None:
     """
     Updates the scores for a given matchup.
     """
@@ -221,7 +221,7 @@ def set_matchup_score(matchup_id: int, scores: list[int]):
         (scores[0], scores[1], matchup_id)
     )
 
-def get_matchup_ids_next_phase(matchup: MatchUp):
+def get_matchup_ids_next_phase(matchup: MatchUp) -> list[int]:
     """
     Retrieves the matchup IDs for the next phase of the tournament.
     """
@@ -231,7 +231,7 @@ def get_matchup_ids_next_phase(matchup: MatchUp):
 
     return [i[0] for i in data]
 
-def get_right_id(matchup: MatchUp, current_ids: list[list[int]], next_ids: list[int]):
+def get_right_id(matchup: MatchUp, current_ids: list[list[int]], next_ids: list[int]) -> int | None:
     """
     Retrieves the ID of the correct next matchup for a given current matchup.
     """
@@ -241,7 +241,7 @@ def get_right_id(matchup: MatchUp, current_ids: list[list[int]], next_ids: list[
 
     return None
 
-def create_phase(league: Tournament, participants: list[str], phase, starting_date: date):
+def create_phase(league: Tournament, participants: list[str], phase, starting_date: date) -> None:
     """
     Creates a phase with matchups for a league tournament.
     """
@@ -265,7 +265,7 @@ def create_phase(league: Tournament, participants: list[str], phase, starting_da
                 player_one.id, player_two.id, None, None)
         )
 
-def get_phases(participants: list[str]):
+def get_phases(participants: list[str]) -> list[int]:
     """
     Retrieves the phases for a league tournament based on the number of participants.
     """
@@ -273,7 +273,7 @@ def get_phases(participants: list[str]):
     phases = [phase+1*i for i in range(len(participants)-1)]
     return phases
 
-def create_league(league: Tournament, participants: list[str], starting_date: date):
+def create_league(league: Tournament, participants: list[str], starting_date: date) -> None:
     """
     Creates a league tournament with phases and matchups based on the participants.
     """

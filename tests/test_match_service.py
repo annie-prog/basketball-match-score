@@ -226,7 +226,7 @@ class TestMatchService(unittest.TestCase):
         """
         Test updating player match scores.
         """
-        match_update = PlayerMatchDetailUpdate(player_ids=[1, 2], score=[10, 15])
+        match_update = PlayerMatchDetailUpdate(player_ids=[5, 6], score=[10, 15])
 
         match_service.update_player_match_score(1, match_update)
 
@@ -234,7 +234,7 @@ class TestMatchService(unittest.TestCase):
             '''UPDATE player_match_detail
                    SET score = %s 
                    WHERE player_id = %s AND match_id = %s''',
-        (15, 2, 1)
+        (15, 6, 1)
         )
 
     @patch('services.match_service.update_query')
