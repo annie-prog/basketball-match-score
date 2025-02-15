@@ -4,27 +4,26 @@ HTTP status codes in the application.
 """
 
 from flask import Response
-from typing import Optional
 
 class BadRequest(Response):
     """
     Represents a 400 Bad Request response with an optional content message.
     """
-    def __init__(self, content: Optional[str] = '') -> None:
+    def __init__(self, content: str | None) -> None:
         super().__init__(response=content, status=400)
 
 class NotFound(Response):
     """
     Represents a 404 Not Found response with an optional content message.
     """
-    def __init__(self, content: Optional[str] = '') -> None:
+    def __init__(self, content: str | None) -> None:
         super().__init__(response=content, status=404)
 
 class Unauthorized(Response):
     """
     Represents a 401 Unauthorized response with an optional content message.
     """
-    def __init__(self, content: Optional[str] = '') -> None:
+    def __init__(self, content: str | None) -> None:
         super().__init__(response=content, status=401)
 
 class NoContent(Response):
@@ -45,5 +44,5 @@ class Successful(Response):
     """
     Represents a 200 OK response with an optional content message.
     """
-    def __init__(self, content: Optional[str] = '') -> None:
+    def __init__(self, content: str | None) -> None:
         super().__init__(response=content, status=200)

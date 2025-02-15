@@ -6,8 +6,7 @@ and handling knockout and league formats.
 
 from datetime import date, timedelta
 from flask import jsonify
-from data.models import (MatchUp, Tournament,
-                        TournamentResponseModel)
+from data.models import MatchUp, Tournament, TournamentResponseModel
 from data.database import insert_query, read_query, update_query
 from services import player_service
 

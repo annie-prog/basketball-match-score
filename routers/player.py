@@ -64,8 +64,6 @@ def all_players():
 def delete_player(player_id: int) -> str:
     """
     Delete a player by their ID.
-    Args:
-        player_id (int): The ID of the player to delete.
     Returns:
         A success message if deleted, or an error if not authorized or player does not exist.
     """

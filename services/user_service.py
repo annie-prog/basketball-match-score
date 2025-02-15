@@ -13,12 +13,16 @@ from data import database
 from data.secrets import SALT, SECRET_KEY, ALGO
 
 def _hash(password: str) -> str:
-    """Hashes the password using blake2s with a salt."""
+    """
+    Hashes the password using blake2s with a salt.
+    """
     password += SALT
     return blake2s(password.encode()).hexdigest()
 
 def create_token(user: User) -> str:
-    """Generates a JWT token for the given user."""
+    """
+    Generates a JWT token for the given user.
+    """
     expiration = datetime.now(timezone.utc) + timedelta(minutes=60)
     payload = {
         "email": user.email,
@@ -30,12 +34,16 @@ def create_token(user: User) -> str:
     return token
 
 def from_token(token: str) -> LogInfo:
-    """Decodes a JWT token into a LogInfo object."""
+    """
+    Decodes a JWT token into a LogInfo object.
+    """
     decoded = jwt.decode(token, SECRET_KEY, algorithms=ALGO)
     return LogInfo(email=decoded["email"], password=decoded["password"])
 
 def create_user(loginfo: LogInfo, name: str, role: str = "user") -> User:
-    """Creates a new user in the database."""
+    """
+    Creates a new user in the database.
+    """
     if role not in ["user", "admin", "director"]:
         raise ValueError(f"Invalid role: {role}")
 
@@ -52,7 +60,9 @@ def create_user(loginfo: LogInfo, name: str, role: str = "user") -> User:
     return User.from_query_result(user_info)
 
 def find_user(loginfo: LogInfo) -> User | None:
-    """Finds a user by their email and password."""
+    """
+    Finds a user by their email and password.
+    """
     h_password = _hash(loginfo.password)
 
     query = "SELECT * from users where email = %s and password = %s"
@@ -66,7 +76,9 @@ def find_user(loginfo: LogInfo) -> User | None:
     return User.from_query_result(user_info)
 
 def promote_to_director(user: User) -> bool:
-    """Promotes a user to the director role."""
+    """
+    Promotes a user to the director role.
+    """
     updated = database.update_query(
         "UPDATE users SET role = %s WHERE id = %s", 
         ('director', user.id)
@@ -74,12 +86,16 @@ def promote_to_director(user: User) -> bool:
     return updated > 0
 
 def all_users() -> list[User]:
-    """Fetches all users from the database."""
+    """
+    Fetches all users from the database.
+    """
     query = database.read_query("SELECT * FROM users")
     return [User.from_query_result(UserInfo(*row)) for row in query]
 
 def get_user_by_id(user_id: int) -> User | None:
-    """Fetches a user by their ID."""
+    """
+    Fetches a user by their ID.
+    """
     data = database.read_query("SELECT * from users where id = %s", (user_id,))
     user = data[0]
     if not user:
@@ -90,7 +106,9 @@ def get_user_by_id(user_id: int) -> User | None:
     return User.from_query_result(user_info)
 
 def delete_user(user_id: int) -> None:
-    """Delete a user by their ID."""
+    """
+    Delete a user by their ID.
+    """
     database.update_query("DELETE from users where id = %s",
         (user_id,)
     )

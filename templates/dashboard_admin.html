@@ -17,21 +17,21 @@
             <p class="fs-5 fw-semibold text-secondary">As an Administrator, you can manage all players and teams.</p>
             <div class="d-flex flex-wrap gap-2">
                 <button id="load-players" class="btn btn-outline-primary">View All Players</button>
-                <a href="{{ url_for('player.add_player') }}" class="btn btn-warning">Link Player</a>
+                <a href="{{ url_for('player.add_player') }}" class="btn btn-outline-primary">Link Player</a>
                 <button id="load-teams" class="btn btn-outline-primary">View All Teams</button>
-                <a href="{{ url_for('team.add_team') }}" class="btn btn-success">Add New Team</a>
-                <a href="{{ url_for('requests.promote_user') }}" class="btn btn-dark">Promote User</a>
-                <a href="{{ url_for('match.create_player_match') }}" class="btn btn-primary">Create Player Match</a>
-                <a href="{{ url_for('match.create_team_match') }}" class="btn btn-primary">Create Team Match</a>
-                <a href="{{ url_for('tournaments.create_knockout_tournament') }}" class="btn btn-danger">Create Knockout Tournament</a>
-                <a href="{{ url_for('tournaments.create_league') }}" class="btn btn-danger">Create League Tournament</a>
-                <button id="update-tournament" class="btn btn-outline-secondary">Set Tournament Winner</button>
-                <button id="player-match-score-form-btn" class="btn btn-outline-secondary">Set Player Match Score</button>
-                <button id="team-match-score-form-btn" class="btn btn-outline-secondary">Set Team Match Score</button>
-                <button id="knockout-tournament-score-form-btn" class="btn btn-outline-secondary">Set Knockout Tournament Score</button>
-                <button id="get-tournaments" class="btn btn-info">View All Tournaments</button>
-                <button id="get-player-matches" class="btn btn-info">View All Player Matches</button>
-                <button id="get-team-matches" class="btn btn-info">View All Team Matches</button>
+                <a href="{{ url_for('team.add_team') }}" class="btn btn-outline-primary">Add New Team</a>
+                <a href="{{ url_for('requests.promote_user') }}" class="btn btn-outline-primary">Promote User</a>
+                <a href="{{ url_for('match.create_player_match') }}" class="btn btn-outline-primary">Create Player Match</a>
+                <a href="{{ url_for('match.create_team_match') }}" class="btn btn-outline-primary">Create Team Match</a>
+                <a href="{{ url_for('tournaments.create_knockout_tournament') }}" class="btn btn-outline-primary">Create Knockout Tournament</a>
+                <a href="{{ url_for('tournaments.create_league') }}" class="btn btn-outline-primary">Create League Tournament</a>
+                <button id="update-tournament" class="btn btn-outline-primary">Set Tournament Winner</button>
+                <button id="player-match-score-form-btn" class="btn btn-outline-primary">Set Player Match Score</button>
+                <button id="team-match-score-form-btn" class="btn btn-outline-primary">Set Team Match Score</button>
+                <button id="knockout-tournament-score-form-btn" class="btn btn-outline-primary">Set Knockout Tournament Score</button>
+                <button id="get-tournaments" class="btn btn-outline-primary">View All Tournaments</button>
+                <button id="get-player-matches" class="btn btn-outline-primary">View All Player Matches</button>
+                <button id="get-team-matches" class="btn btn-outline-primary">View All Team Matches</button>
             </div>
         </div>
 

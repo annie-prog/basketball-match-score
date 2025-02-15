@@ -53,8 +53,6 @@ def all_teams():
 def delete_team(team_id: int) -> str:
     """
     Delete a team by its ID.
-    Args:
-        team_id (int): ID of the team to delete.
     Returns:
         JSON response indicating the result of the deletion.
     """

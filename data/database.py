@@ -15,7 +15,7 @@ def _get_connection() -> connection:
         password='akonarch',
         host='localhost',
         port=5432,
-        database='basketball_matches'
+        database='basketball_match'
     )
 
 def read_query(sql: str, sql_params: tuple = ()) -> list[tuple]:
